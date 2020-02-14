@@ -5,18 +5,40 @@
 
 pacman::p_load(tidyverse)
 
-# ======================
-# Experimenting with MLE
-# ======================
+# ====================
+# Generate Pseudo-Data
+# ====================
 
 set.seed(1)
 
 
-x1 <- rnorm(1000)
-z <- 1 - 2*x1 
+x <- rnorm(1000)
+z <- 5 - 2*x 
 pr <- 1/(1 + exp(-z))
 y <- rbinom(1000, 1, pr)
 
+
+# ==============================================================
+# Write Down Objective Function & Optimize to Recover Parameters
+# ==============================================================
+
+
+standardizer <- sqrt(pi^2 / 6) # Train, Discrete Choice Methods with Simulation, p. 24
+
+
+LL <- function(beta) sum(y * log(exp(t(x) * (beta / standardizer)) / (1 + exp(t(x) * (beta / standardizer)))) + (1 - y) * log(1 / (1 + exp(t(x) * (beta / standardizer)))))
+
+
+optimize(f = LL,
+         interval = c(-10, 20),
+         maximum = T)
+
+map_dbl(seq(-100, 100, .01), LL) %>% plot()
+
+
+# ==============================================================================================
+# Function Factory Approach, https://adv-r.hadley.nz/function-factories.html#MLE Section 10.4.3
+# ==============================================================================================
 
 Log_Likelihood <- function(x, y) {
   
@@ -25,17 +47,37 @@ Log_Likelihood <- function(x, y) {
     
     exponent <- x * beta
     
-    return(sum(y * log(exponent / 1 + exponent) + (1 - y) * log(1 / (1 + exponent))))
+    return(sum(y * log(exp(x * beta) / (1 + exp(x * beta))) + (1 - y) * log(1 / (1 + exp(x * beta)))))
     
   }
   
 }
 
 
+
+h <- seq(from = -10, to = 10, by = .1)
+
+r <- map_dbl(h, LL)
+
+plot(h, r)
+
+glm(y ~ x, family = "binomial")
+
+
+optimize(f = Log_Likelihood,
+         x = x1, 
+         y = y,
+         interval = c(-3, 0))
+
+
+log(exp(beta * x1) / (1 + exp(beta * x1))) 
+log(beta * x / (1 + (beta * x)))
+
+
 Log_Likelihood(x1, y)
 
 LL <- function(y, pr) {
-
+  
   
   return(sum(y * log(pr)) + (1 - y) * log(1 / (pr)))
   
