@@ -38,7 +38,7 @@ LL_values <- map_dbl(search_values, LL)
 
 max_point <- tibble(x = search_values[which.max(LL_values)],
                     y = LL_values[which.max(LL_values)])
-
+windows()
 ggplot() +
   geom_line(aes(x = search_values, y = LL_values)) +
   geom_vline(xintercept = (z / x)[1], color = "red") + # true beta
@@ -90,11 +90,13 @@ Make_Histogram <- function() {
 
 betas <- replicate(n = 10000, Make_Histogram())
 
+windows()
 ggplot() +
   geom_histogram(aes(x = betas), bins = 50) +
   geom_vline(xintercept = (z / x)[1], color = "red") +
   xlab(expression(beta)) +
-  ggtitle("Distribution of Beta")
+  ggtitle("Distribution of Beta") +
+  theme_bw()
 
 
 # # ==============================================================================================
