@@ -13,9 +13,9 @@ set.seed(1)
 
 
 x <- rnorm(1000)
-z <- -3*x 
-pr <- 1/(1 + exp(-z))
-y <- rbinom(1000, 1, pr)
+z <- 0  + 3*x 
+# pr <- pnorm(z)
+y <- ifelse(z > 0, 1, 0)
 
 
 # ==============================================================
@@ -23,14 +23,12 @@ y <- rbinom(1000, 1, pr)
 # ==============================================================
 
 
-standardizer <- sqrt(pi^2 / 3) # Train, Discrete Choice Methods with Simulation, p. 24
 
-
-LL <- function(beta) sum(y * log(pnorm(t(x) * beta, sd = standardizer)) + (1 - y) * log(1 - pnorm(t(x) * beta, sd = standardizer))) 
+LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1 - pnorm(t(x) * beta))) 
                                                                        
 
 optimize(f = LL,
-         interval = c(-4, 4),
+         interval = c(-5, 5),
          maximum = T)
 
 search_values <- seq(-10, 10, .01)
@@ -61,19 +59,16 @@ Make_Histogram <- function() {
 
   x <<- rnorm(1000)
   z <<- 3*x 
-  pr <- 1/(1 + exp(-z))
-  y <- rbinom(1000, 1, pr)
+  y <- ifelse(z > 0, 1, 0)
 
 
 # ==============================================================
 # Write Down Objective Function & Optimize to Recover Parameters
 # ==============================================================
 
-
-  standardizer <- sqrt(pi^2 / 3) # Train, Discrete Choice Methods with Simulation, p. 24
   
   
-  LL <- function(beta) sum(y * log(pnorm(t(x) * beta, sd = standardizer)) + (1 - y) * log(1 - pnorm(t(x) * beta, sd = standardizer))) 
+  LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1 - pnorm(t(x) * beta))) 
   
   
   optimizing <- optimize(f = LL,
@@ -88,7 +83,7 @@ Make_Histogram <- function() {
 # Make Draws with Histogram of Results
 # =====================================
 
-betas <- replicate(n = 10000, Make_Histogram())
+betas <- replicate(n = 1000, Make_Histogram())
 
 windows()
 ggplot() +
