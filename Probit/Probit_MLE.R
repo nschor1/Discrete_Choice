@@ -12,20 +12,27 @@ pacman::p_load(tidyverse)
 set.seed(1)
 
 
-x <- rnorm(1000)
+x <- runif(1000, -1.5, 1.5)
 z <- 0  + 3*x 
 # pr <- pnorm(z)
 y <- ifelse(z > 0, 1, 0)
 
+# TESTING
+
+sum(log(1 - pnorm(x * 3) > 1 | (log(1 - pnorm(x * 3) < 0))))
+sum(pnorm(x * 3) > 1 | pnorm(x * 3) < 0)
+
+a <- y * log(pnorm(x * 3)) + (1 - y) * log(1 - pnorm(x * 3)) 
 
 # ==============================================================
 # Write Down Objective Function & Optimize to Recover Parameters
 # ==============================================================
 
 
-
 LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1 - pnorm(t(x) * beta))) 
                                                                        
+# + exp(.0001)
+
 
 optimize(f = LL,
          interval = c(-5, 5),
