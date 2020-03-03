@@ -1,4 +1,9 @@
 
+# Clear Workspace
+
+rm(list = ls())
+
+
 # ========
 # Packages
 # ========
@@ -13,9 +18,10 @@ set.seed(1)
 
 
 x <- runif(1000, -1.5, 1.5)
+eps <- rnorm(1000, mean = 0, sd = 1)
 z <- 0  + 3*x 
 # pr <- pnorm(z)
-y <- ifelse(z > 0, 1, 0)
+y <- ifelse(z + eps> 0, 1, 0)
 
 # TESTING
 
@@ -29,7 +35,7 @@ a <- y * log(pnorm(x * 3)) + (1 - y) * log(1 - pnorm(x * 3))
 # ==============================================================
 
 
-LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1 - pnorm(t(x) * beta))) 
+LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1.0001 - pnorm(t(x) * beta))) # added .0001 to prevent taking log(0)
                                                                        
 # + exp(.0001)
 
@@ -65,8 +71,9 @@ set.seed(1234)
 Make_Histogram <- function() {
 
   x <<- rnorm(1000)
+  eps <- rnorm(1000, mean = 0, sd = 1)
   z <<- 3*x 
-  y <- ifelse(z > 0, 1, 0)
+  y <- ifelse(z + eps > 0, 1, 0)
 
 
 # ==============================================================
@@ -75,7 +82,7 @@ Make_Histogram <- function() {
 
   
   
-  LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1 - pnorm(t(x) * beta))) 
+  LL <- function(beta) sum(y * log(pnorm(t(x) * beta)) + (1 - y) * log(1.0001 - pnorm(t(x) * beta))) # added .0001 to prevent taking log(0) 
   
   
   optimizing <- optimize(f = LL,
