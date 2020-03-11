@@ -13,10 +13,13 @@ set.seed(1)
 
 
 x <- rnorm(1000)
-z <- -3*x 
+z <- 2 - 3*x 
 pr <- 1/(1 + exp(-z))
 y <- rbinom(1000, 1, pr)
 
+
+optim(par = c(0, 0),
+      fn = function(x) (x[1] - 4)^2 + (x[2] + 5)^2)
 
 # ==============================================================
 # Write Down Objective Function & Optimize to Recover Parameters
@@ -26,12 +29,11 @@ y <- rbinom(1000, 1, pr)
 standardizer <- 1 # Train, Discrete Choice Methods with Simulation, p. 24
 
 
-LL <- function(beta) sum(y * log(exp(t(x) * (beta / standardizer)) / (1 + exp(t(x) * (beta / standardizer)))) + (1 - y) * log(1 / (1 + exp(t(x) * (beta / standardizer)))))
+LL <- function(beta) sum(y * log(exp(t(x) * (beta[1] + beta[2])) / (1 + exp(t(x) * (beta[1] + beta[2])))) + (1 - y) * log(1 / (1 + exp(t(x) * (beta[1] + beta[2])))))
 
 
-optimize(f = LL,
-         interval = c(-4, 10),
-         maximum = T)
+optim(par = c(3,-2),
+      fn = LL)
 
 search_values <- seq(-10, 10, .01)
 LL_values <- map_dbl(search_values, LL) 
